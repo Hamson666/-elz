@@ -1,0 +1,20 @@
+---
+    const { zine } = Astro.props;
+
+    const numZine = Number.parseInt(zine.url.substr(-1, 1));
+---
+
+<!-- bloc-zine p-8 mb-8 border-black border-4  -->
+<div class=`flex flex-row bloc-zine py-6 px-8 mb-8 border-black border-4 ${numZine%2 === 0 ? 'flex-row-reverse' : ''}`>
+    <div class="flex-2 px-16">
+        <img src=`${ zine.frontmatter.image.url }` alt=`${ zine.frontmatter.image.alt }` width="300px" />
+    </div>
+    <div class="content-bloc-zine flex-1 break-words px-16">
+        <h2 class="font-headings text-2xl font-bold my-4">{ zine.frontmatter.titre }</h1>
+        <div class="font-headings flex flex-row mb-1">
+            <p class="flex-1">{ zine.frontmatter.auteur }</p>
+            <p class="flex-1 text-right">{ zine.frontmatter.date }</p>
+        </div>
+        <Fragment set:html={ zine.compiledContent() } />
+    </div>
+</div>

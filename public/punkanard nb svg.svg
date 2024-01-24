@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Calque_1" data-name="Calque 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.91 35.9">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #222;
+        stroke-width: 0px;
+      }
+    </style>
+  </defs>
+  <path class="cls-1" d="M21.92,6.96h-1v1h2v-1h-1Z"/>
+  <rect class="cls-1" x="22.92" y="7.96" width="1" height="1"/>
+  <polygon class="cls-1" points="26.91 15.95 26.91 16.95 27.91 16.95 27.91 15.95 28.91 15.95 28.91 14.95 22.92 14.95 22.92 15.95 26.91 15.95"/>
+  <path class="cls-1" d="M20.92,10.96h2v-1h-1v-1h-1v2Z"/>
+  <path class="cls-1" d="M24.91,21.94v-1h1v-.98h1v-3.02h-1v3h-6s-.99,0-.99,0v-.99h-1v1h.99v.99h1v1h1v-1h1v1h1v-1h1v1h1Z"/>
+  <path class="cls-1" d="M25.91,33.92h-.99v.98h-5v-2h.99v-1h-1v1h-1v-1h-.99v-1h.99v-1h1v1h1v1h1v-1h0v-1h0v-1h-1v-1h-1v-1h0v-.99h-1v-1h-.99v-1h-2v-.96h-1v-1h-1v-2h-1v-1h1v-.98h1v1h.99v.99h1v-1h-.99v-.99h.99v.99h1v-1h-.99v-.99h-1v-1.02h-1v-2h-1v-6h1v-.97h1v-.99h1v-1h2v-.99h3.99v.97h1v1.02h2v.98h-1v1h1v2h-2v1.98h-1v2.01h-1v-.99h-1v1h1v.99h1v-.99h6.99v-3h-4v-1h2v-1h-1v-1h-1v-.99h2v-1h-2V1h-1V0h-2v1.87h-1V0h-1v1h-1V0h-1v1h-3v.99h-1v1h-1v.97h-1v1h-1v1.98h-1v1h1v1.02h-1v1h2v.97h-1v1h1v1.01h-1v1h2v1.02h-1v1h2v1h-4v-1.02h-.93v-1h-1v-1.02h-1v-1h-2v-1h-3.99v1h-1v4.02H0v11.96h1v-4.98h1v-1.98h2v1.02h.99v1h4.93v-.02h2v.96h1v1h1v1h1v.99h0v2h0v1h-1v2h-1.99v1h-5.96v-1h-2.96v1h1v1h2.96v1h17.95v-.98h1v-1h1.99v-1h-2v1ZM18.91,27.9h1v1h-1v-1ZM17.91,30.9h-.99v-1h.99v1ZM17.91,27.9h-.99v-.99h.99v.99Z"/>
+  <path class="cls-1" d="M1,30.91v1h1v-3h-1v2Z"/>
+  <rect class="cls-1" x="2" y="31.91" width="1" height="1"/>
+  <polygon class="cls-1" points="17.92 19.95 16.92 19.95 16.92 20.95 17.91 20.95 17.91 21.94 18.91 21.94 18.91 20.94 17.92 20.94 17.92 19.95"/>
+  <polygon class="cls-1" points="29.91 23.96 29.91 21.95 28.91 21.95 28.91 20.95 27.91 20.95 27.91 19.96 26.91 19.96 26.91 20.96 25.91 20.96 25.91 21.96 26.91 21.96 26.91 20.96 27.91 20.96 27.91 21.95 28.91 21.95 28.91 24.91 27.91 24.91 27.91 28.91 28.91 28.91 28.91 30.9 29.91 30.9 29.91 29.91 30.91 29.91 30.91 23.96 29.91 23.96"/>
+  <rect class="cls-1" x="27.91" y="30.9" width="1" height="2.01"/>
+</svg>

@@ -1,0 +1,19 @@
+---
+    const { image } = Astro.props;
+---
+
+<div class="item-gd-carousel hidden">
+    <div class="h-gd-carousel flex items-center">
+        <img class="border-4 border-black w-96 h-12 mx-auto" src=`${image.frontmatter.image.url}` alt=`${image.frontmatter.image.alt}`/>
+    </div>
+    <div class="infos-projet-gd-carousel py-4 border-b-4 border-black">
+        <div class="header-projet-gd-carousel flex items-center font-headings mb-4">
+            <h3 class="flex-1 titre-projet font-semibold text-2xl">{image.frontmatter.titre}</h3>
+            <p class="flex-1 text-base text-center">{image.frontmatter.auteur}</p>
+            <p class="flex-1 text-base text-right">{image.frontmatter.date}</p>
+        </div>
+        <div class="description-projet-gd-carousel h-32 overflow-hidden">
+            <Fragment set:html={ image.compiledContent() } />
+        </div>
+    </div>
+</div>

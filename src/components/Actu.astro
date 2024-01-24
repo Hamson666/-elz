@@ -1,0 +1,9 @@
+---
+    import BlocActu from "./BlocActu.astro"
+    const actus = await Astro.glob('../pages/actus/*.md');
+---
+
+<div class="actu-index py-8 px-24 border-4 border-black h-full">
+    <h3 class="font-headings text-6xl font-bold text-center mb-4">Actu</h3>
+    {actus.slice(0,4).reverse().map((actu) => <BlocActu actu={ actu } />)}
+</div>

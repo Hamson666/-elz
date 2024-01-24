@@ -1,0 +1,14 @@
+---
+    import BaseLayout from '../layouts/BaseLayout.astro';
+    import BlocZine from '../components/BlocPrint.astro';
+
+    const pageTitle = "Prints"
+    const prints = await Astro.glob('../pages/prints/*.md');
+---
+
+<BaseLayout pageTitle={ pageTitle }>
+    <h1 class="text-center font-headings font-bold text-5xl my-8">{ pageTitle }</h1>
+    <div class="grid grid-cols-2">
+        {prints.map((print) => <BlocZine print={ print } />)}
+    </div>
+</BaseLayout>

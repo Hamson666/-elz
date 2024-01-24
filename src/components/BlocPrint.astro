@@ -1,0 +1,17 @@
+---
+    const { print } = Astro.props;
+---
+
+<!-- bloc-zine p-8 mb-8 border-black border-4  -->
+<div class="flex flex-col bloc-zine mb-8 border-black border-b-4 w-[500px] mx-auto">
+    <!-- <div class=""> -->
+    <img class="w-full" src=`${ print.frontmatter.image.url }` alt=`${ print.frontmatter.image.alt }` />
+    <h2 class="font-headings text-2xl font-bold my-4">{ print.frontmatter.titre }</h2>
+    <div class="font-headings text-lg flex flex-row mb-1">
+        <p class="flex-1">{ print.frontmatter.auteur }</p>
+        <p class="flex-1 text-right">{ print.frontmatter.date }</p>
+    </div>
+    <p>{ print.frontmatter.description }<br/>
+    { print.frontmatter.taille }</p>
+    <!-- </div> -->
+</div>

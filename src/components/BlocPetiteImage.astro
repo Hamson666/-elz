@@ -1,0 +1,10 @@
+---
+    const { image } = Astro.props;
+---
+
+<div class="item-pt-carousel hidden">
+    <div class="h-pt-carousel mb-0">
+        <img class="border-4 border-black w-48 h-48" src=`${image.frontmatter.image.url}` alt=`${image.frontmatter.image.alt}`/>
+    </div>
+    <h3 class="flex-1 titre-projet mt-0 text-center">{image.frontmatter.titre}</h3>
+</div>

@@ -1,0 +1,101 @@
+---
+    import BaseLayout from '../layouts/BaseLayout.astro';
+    import BlocGrandeImage from '../components/BlocGrandeImage.astro';
+    import BlocPetiteImage from '../components/BlocPetiteImage.astro';
+
+    const pageTitle = "Galerie"
+    const grandesImages = await Astro.glob('../pages/galerie/grandes/*.md');
+    const petitesImages = await Astro.glob('../pages/galerie/petites/*.md');
+---
+
+<BaseLayout pageTitle={ pageTitle }>
+    <h1 class="text-center font-headings font-bold text-5xl my-8">{ pageTitle }</h1>
+
+    <div class="grand-carousel-container flex flex-row items-start">
+        <button class="gd-button-prev mx-10 h-gd-carousel"><img src="/fleche-gauche.svg" alt="Flèche gauche grand carousel" width="50"></button>
+        <div class="gd-carousel flex-1">
+            {grandesImages.map((image) => <BlocGrandeImage image={ image } />)}
+        </div>
+        <button class="gd-button-next mx-10 h-gd-carousel"><img src="/fleche-droite.svg" alt="Flèche droite grand carousel" width="50"></button>
+    </div>
+
+    <div class="pt-carousel-container flex flex-row items-start my-12">
+        <button class="pt-button-prev mx-10 h-48"><img src="/fleche-gauche.svg" alt="Flèche gauche petit carousel" width="50"></button>
+        <div class="pt-carousel flex-1 grid grid-cols-5 gap-4">
+            {petitesImages.map((image) => <BlocPetiteImage image={ image } />)}
+        </div>
+        <button class="pt-button-next mx-10 h-48"><img src="/fleche-droite.svg" alt="Flèche droite petit carousel" width="50"></button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            //
+            // Script pour le grand carousel
+            //
+            
+            let gdCarousel = document.querySelector(".gd-carousel");
+            let gdItems = gdCarousel.querySelectorAll(".item-gd-carousel");
+            gdItems[0].classList.add("!block");
+
+            // Function to show a specific item
+            function showGdItem(index) {
+                gdItems.forEach((item, idx) => {
+                    item.classList.remove("!block");
+                    if (idx === index) {
+                        item.classList.add("!block");
+                    }
+                });
+            }
+
+            // Event listeners for buttons
+            document.querySelector(".gd-button-prev").addEventListener("click", () => {
+                let index = [...gdItems].findIndex((item) =>
+                    item.classList.contains("!block")
+                );
+                showGdItem((index - 1 + gdItems.length) % gdItems.length);
+            });
+        
+            document.querySelector(".gd-button-next").addEventListener("click", () => {
+                let index = [...gdItems].findIndex((item) =>
+                    item.classList.contains("!block")
+                );
+                showGdItem((index + 1) % gdItems.length);
+            });
+
+            //
+            // Script pour le grand carousel
+            //
+            
+            let ptCarousel = document.querySelector(".pt-carousel");
+            let ptItems = ptCarousel.querySelectorAll(".item-pt-carousel");
+            for (let i = 0; i < 5; i++) {
+                ptItems[i].classList.add("!block");
+            }
+
+            // Function to show a specific item
+            function showPtItem(index) {
+                ptItems.forEach((item, idx) => {
+                    item.classList.remove("!block");
+                    if (idx >= index && idx < index + 5 && idx <= ptItems.length) {
+                        item.classList.add("!block");
+                    }
+                });
+            }
+
+            // Event listeners for buttons
+            document.querySelector(".pt-button-prev").addEventListener("click", () => {
+                let index = [...ptItems].findIndex((item) =>
+                    item.classList.contains("!block")
+                );
+                index - 5 >= 0 ? showPtItem(((index - 5 + ptItems.length) % ptItems.length)) : showPtItem(ptItems.length - ptItems.length % 5);
+            });
+        
+            document.querySelector(".pt-button-next").addEventListener("click", () => {
+                let index = [...ptItems].findIndex((item) =>
+                    item.classList.contains("!block")
+                );
+                index + 5 < ptItems.length ? showPtItem((index + 5) % ptItems.length) : showPtItem(0);
+            });
+        });
+    </script>
+</BaseLayout>

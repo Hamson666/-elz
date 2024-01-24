@@ -1,0 +1,13 @@
+---
+    import BaseLayout from '../layouts/BaseLayout.astro';
+    import BlocZine from '../components/BlocZine.astro';
+
+    const pageTitle = "Zines"
+    const zines = await Astro.glob('../pages/zines/*.md');
+---
+
+<BaseLayout pageTitle={ pageTitle }>
+    <h1 class="text-center font-headings font-bold text-5xl my-8">{ pageTitle }</h1>
+
+    {zines.map((zine) => <BlocZine zine={ zine } />)}
+</BaseLayout>
