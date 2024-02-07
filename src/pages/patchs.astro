@@ -1,0 +1,13 @@
+---
+    import BaseLayout from '../layouts/BaseLayout.astro';
+    import BlocPatch from '../components/BlocPatch.astro';
+
+    const pageTitle = "Patchs"
+    const patchs = await Astro.glob('../pages/patchs/*.md');
+---
+
+<BaseLayout pageTitle={ pageTitle }>
+    <h1 class="text-center font-headings font-bold text-5xl my-8">{ pageTitle }</h1>
+
+    {patchs.reverse().map((patch) => <BlocPatch patch={ patch } />)}
+</BaseLayout>

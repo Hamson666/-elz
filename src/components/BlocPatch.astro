@@ -1,0 +1,5 @@
+---
+    const { patch } = Astro.props;
+---
+
+<img class="inline-block" src=`${ patch.frontmatter.image.url }` alt=`${ patch.frontmatter.image.alt }` />

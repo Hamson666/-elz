@@ -1,11 +1,11 @@
 ---
     titre: >
-        Tous les saints de Notre Dame
-    date: '2024'
+        C'est pas un print en vrai
+    date: '2023'
     auteur: 'Ortie'
     description: 'Impression numérique sur papier niania'
     taille: '38x25cm'
     image:
-        url: '/public/zines/zone-corps-experience.png'
+        url: '/public/prints/autodefense-sanitaire.png'
         alt: 'Print image'
 ---

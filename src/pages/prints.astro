@@ -9,6 +9,11 @@
 <BaseLayout pageTitle={ pageTitle }>
     <h1 class="text-center font-headings font-bold text-5xl my-8">{ pageTitle }</h1>
     <div class="grid grid-cols-2">
-        {prints.map((print) => <BlocZine print={ print } />)}
+        <div class="zine-col-0">
+            {prints.reverse().map((print) => Number.parseInt(print.url.substr(-1, 1)) % 2 == 0 && <BlocZine print={ print } />)}
+        </div>
+        <div class="zine-col-1">
+            {prints.map((print) => Number.parseInt(print.url.substr(-1, 1)) % 2 != 0 && <BlocZine print={ print } />)}
+        </div>
     </div>
 </BaseLayout>
