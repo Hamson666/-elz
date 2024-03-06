@@ -3,6 +3,9 @@ export default {
 	content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
 	theme: {
 		extend: {
+			screens: {
+				'xl': '1260px',
+			},
 			fontFamily: {
 				'headings': ['"Arvo"', 'Helvetica', 'Arial', 'sans-serif'],
 				// 'headings': [],
@@ -16,7 +19,7 @@ export default {
 		},
 		colors: {
 			'base-color': '#FFF59B',
-		  },
+	},
 	},
 	plugins: [],
 }

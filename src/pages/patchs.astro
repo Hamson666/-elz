@@ -9,5 +9,175 @@
 <BaseLayout pageTitle={ pageTitle }>
     <h1 class="text-center font-headings font-bold text-5xl my-8">{ pageTitle }</h1>
 
-    {patchs.reverse().map((patch) => <BlocPatch patch={ patch } />)}
+    <div class="bloc-patchs relative">
+        {patchs.reverse().map((patch) => <BlocPatch patch={ patch } />)}
+    </div>
+
+    <script is:inline
+			  src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
+			  integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8="
+			  crossorigin="anonymous">
+    </script>
+    <script>
+        $(function() {
+            /*
+            ** Préparation de la grille pour le placement des images
+            ** Grille de 24 de large, avec des carrés de 52.5 pour une largeur totale de 1280px
+            ** Images pouvant avoir des tailles de 3 cases à 10 cases par côté
+            ** On les redimensionne en fonction du ratio le plus proche grâce à la liste allSizes
+            ** Et en fonction de la taille de base (pas d'agrandissement pour pas perdre en qualité)
+            */
+
+            const maxWidthSquare = 24;
+            const squareSize = 52.5;
+            const allSizes = [
+                { width: 10, height: 9, ratio: 1.1111 },
+                { width: 10, height: 8, ratio: 1.25 },
+                { width: 10, height: 7, ratio: 1.4286 },
+                { width: 10, height: 6, ratio: 1.6667 },
+                { width: 10, height: 5, ratio: 2 },
+                { width: 10, height: 4, ratio: 2.5 },
+                { width: 10, height: 3, ratio: 3.3333 },
+                { width: 9, height: 10, ratio: 0.9 },
+                { width: 9, height: 8, ratio: 1.125 },
+                { width: 9, height: 7, ratio: 1.2857 },
+                { width: 9, height: 6, ratio: 1.5 },
+                { width: 9, height: 5, ratio: 1.8 },
+                { width: 9, height: 4, ratio: 2.25 },
+                { width: 9, height: 3, ratio: 3 },
+                { width: 8, height: 10, ratio: 0.8 },
+                { width: 8, height: 9, ratio: 0.8889 },
+                { width: 8, height: 7, ratio: 1.1429 },
+                { width: 8, height: 6, ratio: 1.3333 },
+                { width: 8, height: 5, ratio: 1.6 },
+                { width: 8, height: 4, ratio: 2 },
+                { width: 8, height: 3, ratio: 2.6667 },
+                { width: 7, height: 10, ratio: 0.7 },
+                { width: 7, height: 9, ratio: 0.7778 },
+                { width: 7, height: 8, ratio: 0.875 },
+                { width: 7, height: 6, ratio: 1.1667 },
+                { width: 7, height: 5, ratio: 1.4 },
+                { width: 7, height: 4, ratio: 1.75 },
+                { width: 7, height: 3, ratio: 2.3333 },
+                { width: 6, height: 10, ratio: 0.6 },
+                { width: 6, height: 9, ratio: 0.6667 },
+                { width: 6, height: 8, ratio: 0.75 },
+                { width: 6, height: 7, ratio: 0.8571 },
+                { width: 6, height: 5, ratio: 1.2 },
+                { width: 6, height: 4, ratio: 1.5 },
+                { width: 6, height: 3, ratio: 2 },
+                { width: 5, height: 10, ratio: 0.5 },
+                { width: 5, height: 9, ratio: 0.5556 },
+                { width: 5, height: 8, ratio: 0.625 },
+                { width: 5, height: 7, ratio: 0.7143 },
+                { width: 5, height: 6, ratio: 0.8333 },
+                { width: 5, height: 4, ratio: 1.25 },
+                { width: 5, height: 3, ratio: 1.6667 },
+                { width: 4, height: 10, ratio: 0.4 },
+                { width: 4, height: 9, ratio: 0.4444 },
+                { width: 4, height: 8, ratio: 0.5 },
+                { width: 4, height: 7, ratio: 0.5714 },
+                { width: 4, height: 6, ratio: 0.6667 },
+                { width: 4, height: 5, ratio: 0.8 },
+                { width: 4, height: 3, ratio: 1.3333 },
+                { width: 3, height: 10, ratio: 0.3 },
+                { width: 3, height: 9, ratio: 0.3333 },
+                { width: 3, height: 8, ratio: 0.375 },
+                { width: 3, height: 7, ratio: 0.4286 },
+                { width: 3, height: 6, ratio: 0.5 },
+                { width: 3, height: 5, ratio: 0.6 },
+                { width: 3, height: 4, ratio: 0.75 },
+                { width: 3, height: 3, ratio: 1 },
+            ];
+
+            // On garde en mémoire les cases occupées dans un tableau (Pas de coordonnées, juste le numéro de case)
+            let unavailableTiles = [];
+
+            $( ".patch-img" ).each((index, item) => {
+                /*
+                ** REDIMENSIONNEMENT DES IMAGES
+                */
+
+                // On récupère l'image comme un objet jQuery
+                let img = $(item);
+                let ratioImg = img.width() / img.height();
+
+                // On garde les tailles possibles en fonction de la taille de l'image
+                let possibleSizes = allSizes.filter((item) => img.width() > item.width*squareSize && img.height() > item.height*squareSize);
+
+                // On récupère le ratio le plus proche de celui de l'image de base dans les ratios possibles
+                // On en détermine la taille finale de l'image en terme de cases sur la grille
+                let minDelta = 2;
+                let finalWidth = 0;
+                let finalHeight = 0;
+                possibleSizes.forEach((item) => {
+                    if (Math.abs(item.ratio - ratioImg) < minDelta) {
+                        minDelta = Math.abs(item.ratio - ratioImg);
+                        finalWidth = item.width;
+                        finalHeight = item.height;
+                    }
+                })
+
+                // On redimensionne l'image avec sa taille finale
+                img.css({
+                    'width': finalWidth * squareSize + 'px',
+                    'height': finalHeight * squareSize + 'px'
+                });
+
+                /*
+                ** PLACEMENT DES IMAGES
+                */
+
+                let currentCoor = [];
+                let isPossible = false;
+                let yPos = 0;
+                let xPos = 0;
+
+                // Tester sur chaque case si l'image peut être placée sans être sur une autre
+                while (!isPossible) {
+                    xPos = 0;
+                    while (xPos < maxWidthSquare - finalWidth && !isPossible) {
+                        currentCoor = [];
+                        isPossible = true;
+                        let xSize = 0;
+                        while (xSize < finalWidth && isPossible) {
+                            let ySize = 0;
+                            while (ySize < finalHeight && isPossible) {
+                                currentCoor.push((xPos + xSize + 1) + maxWidthSquare * (yPos + ySize));
+                                isPossible = !unavailableTiles.includes((xPos + xSize + 1) + maxWidthSquare * (yPos + ySize));
+                                ySize++;
+                            }
+                            xSize++
+                        }
+                        // 10% de chances que l'image soit décalée vers la droite
+                        isPossible = Math.random() < 0.1 ? false : isPossible;
+                        xPos++;
+                    }
+                    // 25% de chances que l'image soit décalée vers le bas
+                    isPossible = Math.random() < 0.25 ? false : isPossible;
+                    yPos++;
+                }
+
+                // Ajout des cases de l'image en cours dans la liste des cases déjà prises
+                unavailableTiles = unavailableTiles.concat(Array.from(currentCoor, (tile) => tile));
+
+                // Si l'image est proche du bord droit, on le décale jusqu'au bord droit (Pour utiliser toute la largeur)
+                xPos = maxWidthSquare - xPos - finalWidth < 2 ? maxWidthSquare - finalWidth + 1 : xPos;
+
+                img.css({
+                    'top': (yPos - 1) * squareSize + 'px',
+                    'left': (xPos - 1) * squareSize + 'px'
+                });
+            });
+
+            /*
+            ** Déplacement du footer en bas de page
+            */
+
+            const lastTile = Math.max(...unavailableTiles)
+            $(".footer").css({
+                'margin-top': (Math.floor(lastTile/maxWidthSquare) + 2) * squareSize + 'px'
+            })
+        });
+    </script>
 </BaseLayout>
