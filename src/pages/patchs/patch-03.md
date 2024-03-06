@@ -2,6 +2,6 @@
     titre: >
         Descendents
     image:
-        url: '/public/patchs/descendents.png'
+        url: '/patchs/descendents.PNG'
         alt: 'Patch image'
 ---

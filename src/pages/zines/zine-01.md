@@ -4,7 +4,7 @@
     date: '10/01/2024'
     auteur: 'Ortie'
     image:
-        url: '../../public/zines/zone-corps-experience.png'
+        url: '/zines/zone-corps-experience.PNG'
         alt: 'Zine image'
 ---
 

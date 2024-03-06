@@ -2,6 +2,6 @@
     titre: >
         Mad pride
     image:
-        url: '/public/patchs/mad-pride.png'
+        url: '/patchs/mad-pride.PNG'
         alt: 'Patch image'
 ---

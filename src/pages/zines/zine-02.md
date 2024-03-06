@@ -4,7 +4,7 @@
     date: '2023-2025'
     auteur: 'Ortie'
     image:
-        url: '../../public/zines/histamine.png'
+        url: '/zines/histamine.PNG'
         alt: 'Zine histamine image'
 ---
 

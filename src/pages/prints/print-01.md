@@ -6,6 +6,6 @@
     description: 'Linogravure sur papier niania'
     taille: '22x18cm'
     image:
-        url: '/public/prints/blabla.png'
+        url: '/prints/blabla.PNG'
         alt: 'Print image'
 ---

@@ -6,6 +6,6 @@
     description: 'Impression numérique sur papier niania'
     taille: '38x25cm'
     image:
-        url: '/public/prints/autodefense-sanitaire.png'
+        url: '/prints/autodefense-sanitaire.PNG'
         alt: 'Print image'
 ---

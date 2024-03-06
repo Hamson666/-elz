@@ -2,6 +2,6 @@
     titre: >
         Insatiable, insortable, irrespectable
     image:
-        url: '/public/patchs/insatiable-insortable-irrespectable.png'
+        url: '/patchs/insatiable-insortable-irrespectable.PNG'
         alt: 'Patch image'
 ---

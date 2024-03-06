@@ -6,6 +6,6 @@
     description: 'Impression numérique sur papier niania'
     taille: '38x25cm'
     image:
-        url: '/public/prints/tous-les-seints-de-notre-dame.png'
+        url: '/prints/tous-les-seints-de-notre-dame.PNG'
         alt: 'Print image'
 ---

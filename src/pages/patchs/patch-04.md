@@ -2,6 +2,6 @@
     titre: >
         Cookie
     image:
-        url: '/public/patchs/cookie.png'
+        url: '/patchs/cookie.PNG'
         alt: 'Patch image'
 ---

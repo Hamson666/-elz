@@ -4,7 +4,7 @@
     date: '2024'
     auteur: 'Zine collectif'
     image:
-        url: '../../public/zines/queer-en-campagne.png'
+        url: '/zines/queer-en-campagne.PNG'
         alt: 'Zine image'
 ---
 

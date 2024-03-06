@@ -2,6 +2,6 @@
     titre: >
         Live fast die young
     image:
-        url: '/public/patchs/live-fast-die-young.png'
+        url: '/patchs/live-fast-die-young.PNG'
         alt: 'Patch image'
 ---
