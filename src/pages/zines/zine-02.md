@@ -5,7 +5,7 @@
     auteur: 'Ortie'
     image:
         url: '/zines/histamine.PNG'
-        alt: 'Zine histamine image'
+        alt: 'Zine histamine'
 ---
 
 ça c'est les mini zines qui sortent via newsletter mais tu peux aussi les acheter e, papier quand tu me croise ça parle de tout et de rien c'est pas toujours fabuleux mais ça existe et c'est déjà bien.

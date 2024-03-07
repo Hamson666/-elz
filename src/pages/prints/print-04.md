@@ -7,5 +7,5 @@
     taille: '22x18cm'
     image:
         url: '/prints/vernaculaire.PNG'
-        alt: 'Print image'
+        alt: 'Print vernaculaire'
 ---

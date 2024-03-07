@@ -3,5 +3,5 @@
         Descendents
     image:
         url: '/patchs/descendents.PNG'
-        alt: 'Patch image'
+        alt: 'Patch descendents'
 ---

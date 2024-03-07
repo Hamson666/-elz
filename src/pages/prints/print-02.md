@@ -7,5 +7,5 @@
     taille: '38x25cm'
     image:
         url: '/prints/autodefense-sanitaire.PNG'
-        alt: 'Print image'
+        alt: 'Print autodefense sanitaire'
 ---

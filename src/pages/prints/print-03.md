@@ -7,5 +7,5 @@
     taille: '38x25cm'
     image:
         url: '/prints/tous-les-seints-de-notre-dame.PNG'
-        alt: 'Print image'
+        alt: 'Print tous les seints de notre dame'
 ---

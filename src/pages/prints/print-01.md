@@ -7,5 +7,5 @@
     taille: '22x18cm'
     image:
         url: '/prints/blabla.PNG'
-        alt: 'Print image'
+        alt: 'Print blabla'
 ---
