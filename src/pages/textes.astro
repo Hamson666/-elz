@@ -88,11 +88,11 @@
                             }
                             xSize++
                         }
-                        // 10% de chances que le texte soit décalée vers la droite
-                        isPossible = Math.random() < 0.1 ? false : isPossible;
+                        // 20% de chances que le texte soit décalée vers la droite
+                        isPossible = Math.random() < 0.2 ? false : isPossible;
                         xPos++;
                     }
-                    // 25% de chances que le texte soit décalée vers le bas
+                    // 50% de chances que le texte soit décalée vers le bas
                     isPossible = Math.random() < 0.5 ? false : isPossible;
                     yPos++;
                 }
@@ -100,8 +100,8 @@
                 // Ajout des cases du texte en cours dans la liste des cases déjà prises
                 unavailableTiles = unavailableTiles.concat(Array.from(currentCoor, (tile) => tile));
 
-                // Si le texte est proche du bord droit, on le décale jusqu'au bord droit (Pour utiliser toute la largeur)
-                xPos = maxWidthSquare - xPos - finalWidth < 4 ? maxWidthSquare - finalWidth + 1 : xPos;
+                // On colle les textes à droite s'ils arrivent à plus de 3/4 de la largeur de la page
+                xPos = maxWidthSquare - xPos - finalWidth < 6 ? maxWidthSquare - finalWidth + 1 : xPos;
 
                 texte.css({
                     'top': (yPos - 1) * squareSize + 'px',
