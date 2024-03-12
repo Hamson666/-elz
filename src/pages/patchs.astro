@@ -19,17 +19,19 @@
 			  crossorigin="anonymous">
     </script>
     <script>
+        function roundHalf(num:number):number { return (Math.round(num*2)/2); }
+
         $(function() {
             /*
             ** Préparation de la grille pour le placement des images
-            ** Grille de 24 de large, avec des carrés de 52.5 pour une largeur totale de 1280px
+            ** Grille de 24 de large, avec des carrés de 52.5 pour une largeur totale de 1260px (au max)
             ** Images pouvant avoir des tailles de 3 cases à 10 cases par côté
             ** On les redimensionne en fonction du ratio le plus proche grâce à la liste allSizes
             ** Et en fonction de la taille de base (pas d'agrandissement pour pas perdre en qualité)
             */
 
             const maxWidthSquare = 24;
-            const squareSize = $('.container-main-content').width() / maxWidthSquare;
+            const squareSize = roundHalf($('.container-main-content').width() / maxWidthSquare);
             const allSizes = [
                 { width: 10, height: 9, ratio: 1.1111 },
                 { width: 10, height: 8, ratio: 1.25 },
@@ -91,7 +93,7 @@
             ];
 
             // On garde en mémoire les cases occupées dans un tableau (Pas de coordonnées, juste le numéro de case)
-            let unavailableTiles = [];
+            let unavailableTiles: number[] = [];
 
             $( ".patch-img" ).each((index, item) => {
                 /*
@@ -128,7 +130,7 @@
                 ** PLACEMENT DES IMAGES
                 */
 
-                let currentCoor = [];
+                let currentCoor: number[] = [];
                 let isPossible = false;
                 let yPos = 0;
                 let xPos = 0;
@@ -174,9 +176,8 @@
             ** Déplacement du footer en bas de page
             */
 
-            const lastTile = Math.max(...unavailableTiles)
             $(".footer").css({
-                'margin-top': (Math.floor(lastTile/maxWidthSquare) + 2) * squareSize + 'px'
+                'margin-top': $(document).height() - $(this.body).height() + $('.footer').height() + 56 + 'px'
             })
         });
     </script>
