@@ -10,10 +10,10 @@ import Friends from '../components/Friends.astro';
 
 <BaseLayout pageTitle="Accueil">
     <div class="image-index w-100 h-96 flex items-center !bg-cover mb-4">
-        <h1 class="image-index-text font-headings font-bold text-7xl text-base-color mx-auto">Never stop creating new shit</h1>
+        <h1 class="image-index-text font-headings font-bold text-center text-6xl lg:text-7xl text-base-color mx-auto px-8 lg:px-12">Never stop creating new shit</h1>
     </div>
 
-    <div class="first-grid-index grid grid-cols-12 gap-4 mb-4">
+    <div class="first-grid-index grid grid-cols-1 sm:grid-cols-12 gap-4 mb-4">
         <div class="index-bloc-1-col-1 col-span-7">
             <Bio />
             <Newsletter />
@@ -23,7 +23,7 @@ import Friends from '../components/Friends.astro';
         </div>
     </div>
 
-    <div class="second-grid-index grid grid-cols-12 gap-4 mb-4">
+    <div class="second-grid-index grid grid-cols-1 sm:grid-cols-12 gap-4 mb-4">
         <div class="index-bloc-1-col-1 col-span-5 flex flex-col content-stretch">
             <Contact />
             <div class="image-portrait h-full !bg-cover"></div>

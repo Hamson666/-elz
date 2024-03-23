@@ -12,90 +12,144 @@
     <h1 class="text-center font-headings font-bold text-4xl lg:text-5xl my-8">{ pageTitle }</h1>
 
     <div class="grand-carousel-container flex flex-row items-start">
-        <button class="gd-button-prev mx-10 h-gd-carousel"><img src="/fleche-gauche.svg" alt="Flèche gauche grand carousel" width="50"></button>
-        <div class="gd-carousel flex-1">
-            {grandesImages.map((image) => <BlocGrandeImage image={ image } />)}
+        <div class="gd-carousel-slides-container w-full flex flex-row items-start">
+            <button class="gd-button-prev mx-6 md:mx-8 lg:mx-10 my-8 max-h-gd-carousel w-[30px] md:w-[40px] lg:w-[50px]"><img src="/fleche-gauche.svg" alt="Flèche gauche grand carousel"></button>
+            <div class="gd-carousel flex-1">
+                {grandesImages.map((image) => <BlocGrandeImage image={ image } />)}
+            </div>
+            <button class="gd-button-next mx-6 md:mx-8 lg:mx-10 my-8 max-h-gd-carousel w-[30px] md:w-[40px] lg:w-[50px]"><img src="/fleche-droite.svg" alt="Flèche droite grand carousel"></button>
         </div>
-        <button class="gd-button-next mx-10 h-gd-carousel"><img src="/fleche-droite.svg" alt="Flèche droite grand carousel" width="50"></button>
     </div>
 
     <div class="pt-carousel-container flex flex-row items-start my-12">
-        <button class="pt-button-prev mx-10 h-48"><img src="/fleche-gauche.svg" alt="Flèche gauche petit carousel" width="50"></button>
+        <button class="pt-button-prev mx-6 md:mx-8 lg:mx-10 w-[30px] md:w-[40px] lg:w-[50px]"><img src="/fleche-gauche.svg" alt="Flèche gauche petit carousel"></button>
         <div class="pt-carousel flex-1 grid grid-cols-5 gap-4">
             {petitesImages.map((image) => <BlocPetiteImage image={ image } />)}
         </div>
-        <button class="pt-button-next mx-10 h-48"><img src="/fleche-droite.svg" alt="Flèche droite petit carousel" width="50"></button>
+        <button class="pt-button-next mx-6 md:mx-8 lg:mx-10 w-[30px] md:w-[40px] lg:w-[50px]"><img src="/fleche-droite.svg" alt="Flèche droite petit carousel"></button>
     </div>
 
+    <script is:inline
+			  src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
+			  integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8="
+			  crossorigin="anonymous">
+    </script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            //
-            // Script pour le grand carousel
-            //
+        $(function() {
+            /*
+            ** SCRIPT POUR LE GRAND CAROUSEL
+            */
             
-            let gdCarousel = document.querySelector(".gd-carousel");
-            let gdItems = gdCarousel.querySelectorAll(".item-gd-carousel");
-            gdItems[0].classList.add("!block");
+            // On récupère toutes les slides dans un tableau
+            let gdItems = $(".item-gd-carousel");
 
-            // Function to show a specific item
-            function showGdItem(index) {
-                gdItems.forEach((item, idx) => {
-                    item.classList.remove("!block");
-                    if (idx === index) {
-                        item.classList.add("!block");
+            // On affiche la première slide au chargement de la page
+            gdItems.first().removeClass("hidden");
+
+            // On change la hauteur des blocs contenant les flèches pour les centrer
+            $(".gd-button-prev, .gd-button-next").each((index, item) => {
+                $(item).css({
+                    'height': $(".img-projet-gd-carousel").first().height() + 'px'
+                });
+            })
+
+            // Fonction qui permet d'afficher une slide selon sa place dans le tableau
+            function showGdItem(indexSlideToShow) {
+                gdItems.each((index, item) => {
+                    if (!$(item).hasClass("hidden")) {
+                        $(item).addClass("hidden");
+                    } else if (index === indexSlideToShow) {
+                        $(item).removeClass("hidden");
                     }
                 });
             }
 
-            // Event listeners for buttons
-            document.querySelector(".gd-button-prev").addEventListener("click", () => {
+            // Event listeners pour les flèches
+            $(".gd-button-prev").on("click", () => {
                 let index = [...gdItems].findIndex((item) =>
-                    item.classList.contains("!block")
+                    !$(item).hasClass("hidden")
                 );
                 showGdItem((index - 1 + gdItems.length) % gdItems.length);
+
+                // On change la hauteur des blocs contenant les flèches pour les centrer
+                $(".gd-button-prev, .gd-button-next").each((i, item) => {
+                    $(item).css({
+                        'height': $(".img-projet-gd-carousel").eq((index - 1 + gdItems.length) % gdItems.length).height() + 'px'
+                    });
+                })
             });
         
-            document.querySelector(".gd-button-next").addEventListener("click", () => {
+            $(".gd-button-next").on("click", () => {
                 let index = [...gdItems].findIndex((item) =>
-                    item.classList.contains("!block")
+                    !$(item).hasClass("hidden")
                 );
                 showGdItem((index + 1) % gdItems.length);
+
+                // On change la hauteur des blocs contenant les flèches pour les centrer
+                $(".gd-button-prev, .gd-button-next").each((i, item) => {
+                    $(item).css({
+                        'height': $(".img-projet-gd-carousel").eq((index - 1 + gdItems.length) % gdItems.length).height() + 'px'
+                    });
+                })
             });
 
-            //
-            // Script pour le grand carousel
-            //
+            /*
+            ** SCRIPT POUR LE PETIT CAROUSEL
+            */
             
-            let ptCarousel = document.querySelector(".pt-carousel");
-            let ptItems = ptCarousel.querySelectorAll(".item-pt-carousel");
+            let ptItems = $(".item-pt-carousel");
             for (let i = 0; i < 5; i++) {
-                ptItems[i].classList.add("!block");
+                ptItems.eq(i).removeClass("hidden");
             }
 
+            // On change la hauteur des blocs contenant les flèches pour les centrer
+            $(".pt-button-prev, .pt-button-next").each((index, item) => {
+                $(item).css({
+                    'height': $(".img-projet-pt-carousel").first().height() + 'px'
+                });
+            })
+
+            // On change la hauteur des blocs contenant les flèches pour les centrer
+            // $(".gd-button-prev, .gd-button-next").each((i, item) => {
+            //     $(item).css({
+            //         'height': $(".img-projet-gd-carousel").eq((index - 1 + gdItems.length) % gdItems.length).height() + 'px'
+            //     });
+            // })
+
             // Function to show a specific item
-            function showPtItem(index) {
-                ptItems.forEach((item, idx) => {
-                    item.classList.remove("!block");
-                    if (idx >= index && idx < index + 5 && idx <= ptItems.length) {
-                        item.classList.add("!block");
+            function showPtItem(indexFirstSlideToShow) {
+                ptItems.each((index, item) => {
+                    if (index >= indexFirstSlideToShow && index < indexFirstSlideToShow + 5 && index < ptItems.length) {
+                        $(item).removeClass("hidden");
+                    } else if (!$(item).hasClass("hidden")) {
+                        $(item).addClass("hidden");
                     }
                 });
             }
 
             // Event listeners for buttons
-            document.querySelector(".pt-button-prev").addEventListener("click", () => {
+            $(".pt-button-prev").on("click", () => {
                 let index = [...ptItems].findIndex((item) =>
-                    item.classList.contains("!block")
+                    !$(item).hasClass("hidden")
                 );
                 index - 5 >= 0 ? showPtItem(((index - 5 + ptItems.length) % ptItems.length)) : showPtItem(ptItems.length - ptItems.length % 5);
             });
         
-            document.querySelector(".pt-button-next").addEventListener("click", () => {
+            $(".pt-button-next").on("click", () => {
                 let index = [...ptItems].findIndex((item) =>
-                    item.classList.contains("!block")
+                    !$(item).hasClass("hidden")
                 );
                 index + 5 < ptItems.length ? showPtItem((index + 5) % ptItems.length) : showPtItem(0);
             });
+
+            $( window ).on( 'resize', function() {
+                // Au redimensionnement de la fenêtre on change la hauteur des blocs contenant les flèches pour les centrer
+                $(".pt-button-prev, .pt-button-next").each((index, item) => {
+                    $(item).css({
+                        'height': $(".img-projet-pt-carousel").first().height() + 'px'
+                    });
+                })
+            })
         });
     </script>
 </BaseLayout>
