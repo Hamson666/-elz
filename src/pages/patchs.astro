@@ -7,9 +7,9 @@
 ---
 
 <BaseLayout pageTitle={ pageTitle }>
-    <h1 class="text-center font-headings font-bold text-5xl my-8">{ pageTitle }</h1>
+    <h1 class="text-center font-headings font-bold text-4xl lg:text-5xl my-8">{ pageTitle }</h1>
 
-    <div class="bloc-patchs relative">
+    <div class="patch-imgs relative sm:grid sm:grid-cols-5">
         {patchs.reverse().map((patch) => <BlocPatch patch={ patch } />)}
     </div>
 
@@ -21,6 +21,81 @@
     <script>
         function roundHalf(num:number):number { return (Math.round(num*2)/2); }
 
+        function isBlocPlaceable(width:number, height:number, index:number, maxWidthTiles:number, unavailableTiles:Array<number>) {
+            let isPossible = true;
+            let xSize = 0;
+            while (xSize <= width && isPossible) {
+                let ySize = 0;
+                while (ySize < height && isPossible) {
+                    isPossible = !unavailableTiles.includes(index + xSize + ySize * maxWidthTiles);
+                    ySize++;
+                }
+                xSize++
+            }
+            return isPossible;
+        }
+
+        function placeBlocInMap(width:number, height:number, index:number, maxWidthTiles:number, unavailableTiles:Array<number>) {
+            let xSize = 0;
+            while (xSize <= width) {
+                let ySize = 0;
+                while (ySize < height) {
+                    unavailableTiles.push(index + xSize + ySize * maxWidthTiles);
+                    ySize++;
+                }
+                xSize++
+            }
+            return unavailableTiles;
+        }
+
+        function placeBlocsInDOM(dataBlocsPatch:Array<{width:number,height:number,horizontalOffset:number,verticalOffset:number}>, breakpoints:{min:number,max:number}, maxWidthTiles:number) {
+            // Pas oublier les marges de 16px de côté
+            const squareSize = $( window ).width() > breakpoints.max ? roundHalf(breakpoints.max / maxWidthTiles) : roundHalf(($( window ).width() - 32) / maxWidthTiles);    
+            let unavailableTiles = [];
+            
+            $( ".patch-img" ).each((index, item) => {
+                // On récupère le patch comme un objet jQuery
+                let patch = $(item);
+
+                let isPossible = false;
+                let yPos = 0;
+                let xPos = 0;
+
+                // Tester sur chaque case si le patch peut être placée sans être sur une autre
+                while (!isPossible) {
+                    xPos = 0;
+                    while (xPos < maxWidthTiles - dataBlocsPatch[index].width && !isPossible) {
+                        isPossible = isBlocPlaceable(dataBlocsPatch[index].width + dataBlocsPatch[index].horizontalOffset, dataBlocsPatch[index].height + dataBlocsPatch[index].verticalOffset, (xPos + yPos * maxWidthTiles), maxWidthTiles, unavailableTiles);
+                        xPos++;
+                    }
+                    yPos++;
+                }
+                        
+                // On ajoute l'offset
+                xPos += dataBlocsPatch[index].horizontalOffset;
+                yPos += dataBlocsPatch[index].verticalOffset;
+
+                // On colle les patchs à droite s'ils arrivent à moins de 2 cases du bord droit
+                xPos = maxWidthTiles - xPos - dataBlocsPatch[index].width < 2 ? maxWidthTiles - dataBlocsPatch[index].width + 1 : xPos;
+                
+                // Ajout des cases du patch en cours dans la liste des cases déjà prises
+                unavailableTiles = placeBlocInMap(dataBlocsPatch[index].width, dataBlocsPatch[index].height, (xPos - 2 + ((yPos - 1) * maxWidthTiles)), maxWidthTiles, unavailableTiles);
+                
+                if (window.innerWidth >= breakpoints.min) {
+                    // On redimensionne et  place le patch
+                    patch.css({
+                        'top': (yPos - 1) * squareSize + 'px',
+                        'left': (xPos - 1) * squareSize + 'px',
+                        'width': roundHalf(dataBlocsPatch[index].width * squareSize) + 'px',
+                        'height': roundHalf(dataBlocsPatch[index].height * squareSize) + 'px'
+                    });
+                }
+            });
+
+            // On renvoie la taille complète du canvas du début jusqu'à la dernière case occupée
+            return Math.floor((Math.max(...unavailableTiles) / maxWidthTiles + 1) * squareSize);
+        }
+
         $(function() {
             /*
             ** Préparation de la grille pour le placement des images
@@ -29,9 +104,8 @@
             ** On les redimensionne en fonction du ratio le plus proche grâce à la liste allSizes
             ** Et en fonction de la taille de base (pas d'agrandissement pour pas perdre en qualité)
             */
-
-            const maxWidthSquare = 24;
-            const squareSize = roundHalf($('.container-main-content').width() / maxWidthSquare);
+            const breakpoints = { min: 1024, max: 1260 };
+            const maxWidthTiles = 24;
             const allSizes = [
                 { width: 10, height: 9, ratio: 1.1111 },
                 { width: 10, height: 8, ratio: 1.25 },
@@ -92,8 +166,8 @@
                 { width: 3, height: 3, ratio: 1 },
             ];
 
-            // On garde en mémoire les cases occupées dans un tableau (Pas de coordonnées, juste le numéro de case)
-            let unavailableTiles: number[] = [];
+            // On garde en mémoire les tailles et positions pour gérer le redimensionnement de la fenêtre
+            let dataBlocsPatch = [];
 
             $( ".patch-img" ).each((index, item) => {
                 /*
@@ -102,10 +176,12 @@
 
                 // On récupère l'image comme un objet jQuery
                 let img = $(item);
-                let ratioImg = img.width() / img.height();
+
+                // On définit son ratio par rapport à sa vraie taille
+                let ratioImg = img.prop("naturalWidth") / img.prop("naturalHeight");
 
                 // On garde les tailles possibles en fonction de la taille de l'image
-                let possibleSizes = allSizes.filter((item) => img.width() > item.width*squareSize && img.height() > item.height*squareSize);
+                let possibleSizes = allSizes.filter((item) => img.prop("naturalWidth") > item.width*roundHalf(breakpoints.max / maxWidthTiles) && img.prop("naturalWidth") > item.height*roundHalf(breakpoints.max / maxWidthTiles));
 
                 // On récupère le ratio le plus proche de celui de l'image de base dans les ratios possibles
                 // On en détermine la taille finale de l'image en terme de cases sur la grille
@@ -120,65 +196,49 @@
                     }
                 })
 
-                // On redimensionne l'image avec sa taille finale
-                img.css({
-                    'width': finalWidth * squareSize + 'px',
-                    'height': finalHeight * squareSize + 'px'
-                });
+                // 20% de chances que le texte soit décalée vers la droite
+                const horizontalOffset = Math.random() < 0.1 ? 1 : 0;
+                // 25% de chances que le texte soit décalée vers le bas
+                const verticalOffset = Math.random() < 0.25 ? 1 : 0;
+
+                // On remplit le tableau des tailles et positions des différents textes
+                dataBlocsPatch.push({ width: finalWidth, height: finalHeight, horizontalOffset: horizontalOffset, verticalOffset: verticalOffset });
+            });
+
+            const canvasHeight = placeBlocsInDOM(dataBlocsPatch, breakpoints, maxWidthTiles);
+            
+            $( window ).on( 'resize', function() {
+                // On replace les textes dans la page en récupérant la nouvelle hauteur du canvas
+                const canvasHeight = placeBlocsInDOM(dataBlocsPatch, breakpoints, maxWidthTiles);
 
                 /*
-                ** PLACEMENT DES IMAGES
+                ** Déplacement du footer en bas de page
                 */
 
-                let currentCoor: number[] = [];
-                let isPossible = false;
-                let yPos = 0;
-                let xPos = 0;
-
-                // Tester sur chaque case si l'image peut être placée sans être sur une autre
-                while (!isPossible) {
-                    xPos = 0;
-                    while (xPos < maxWidthSquare - finalWidth && !isPossible) {
-                        currentCoor = [];
-                        isPossible = true;
-                        let xSize = 0;
-                        while (xSize < finalWidth && isPossible) {
-                            let ySize = 0;
-                            while (ySize < finalHeight && isPossible) {
-                                currentCoor.push((xPos + xSize + 1) + maxWidthSquare * (yPos + ySize));
-                                isPossible = !unavailableTiles.includes((xPos + xSize + 1) + maxWidthSquare * (yPos + ySize));
-                                ySize++;
-                            }
-                            xSize++
-                        }
-                        // 10% de chances que l'image soit décalée vers la droite
-                        isPossible = Math.random() < 0.1 ? false : isPossible;
-                        xPos++;
-                    }
-                    // 25% de chances que l'image soit décalée vers le bas
-                    isPossible = Math.random() < 0.25 ? false : isPossible;
-                    yPos++;
+                if (window.innerWidth >= breakpoints.min) {
+                    $( ".patch-imgs" ).css({
+                        'height': canvasHeight + 'px'
+                    })
+                } else {
+                    $( ".patch-imgs" ).css({
+                        'height': 'auto'
+                    })
                 }
-
-                // Ajout des cases de l'image en cours dans la liste des cases déjà prises
-                unavailableTiles = unavailableTiles.concat(Array.from(currentCoor, (tile) => tile));
-
-                // Si l'image est proche du bord droit, on le décale jusqu'au bord droit (Pour utiliser toute la largeur)
-                xPos = maxWidthSquare - xPos - finalWidth < 2 ? maxWidthSquare - finalWidth + 1 : xPos;
-
-                img.css({
-                    'top': (yPos - 1) * squareSize + 'px',
-                    'left': (xPos - 1) * squareSize + 'px'
-                });
-            });
+            })
 
             /*
             ** Déplacement du footer en bas de page
             */
 
-            $(".footer").css({
-                'margin-top': $(document).height() - $(this.body).height() + $('.footer').height() + 56 + 'px'
-            })
+            if (window.innerWidth >= breakpoints.min) {
+                $( ".patch-imgs" ).css({
+                    'height': canvasHeight + 'px'
+                })
+            } else {
+                $( ".patch-imgs" ).css({
+                    'height': 'auto'
+                })
+            }
         });
     </script>
 </BaseLayout>

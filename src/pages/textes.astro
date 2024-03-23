@@ -7,10 +7,19 @@
 ---
 
 <BaseLayout pageTitle={ pageTitle }>
-    <h1 class="text-center font-headings font-bold text-5xl my-8">{ pageTitle }</h1>
+    <h1 class="text-center font-headings font-bold text-4xl lg:text-5xl my-8">{ pageTitle }</h1>
 
-    <div class="bloc-textes relative md:grid md:grid-cols-2">
-        {textes.map((texte) => <BlocTexte texte={ texte } />)}
+    <div class="bloc-textes-grid sm:grid sm:grid-cols-2 sm:gap-2 lg:hidden">
+        <!-- {textes.map((texte) => <BlocTexte texte={ texte } />)} -->
+        <div class="zine-col-0">
+            {textes.reverse().map((texte) => Number.parseInt(texte.url.substr(-1, 1)) % 2 == 0 && <BlocTexte texte={ texte } mediaSize="sm" />)}
+        </div>
+        <div class="zine-col-1">
+            {textes.reverse().map((texte) => Number.parseInt(texte.url.substr(-1, 1)) % 2 != 0 && <BlocTexte texte={ texte } mediaSize="sm" />)}
+        </div>
+    </div>
+    <div class="bloc-textes relative">
+        {textes.map((texte) => <BlocTexte texte={ texte } mediaSize="lg" />)}
     </div>
 
     <script is:inline
@@ -21,13 +30,13 @@
     <script>
         function roundHalf(num:number):number { return (Math.round(num*2)/2); }
 
-        function isBlocPlaceable(width:number, height:number, index:number, maxWidthSquare:number, unavailableTiles:Array<number>) {
+        function isBlocPlaceable(width:number, height:number, index:number, maxWidthTiles:number, unavailableTiles:Array<number>) {
             let isPossible = true;
             let xSize = 0;
             while (xSize <= width && isPossible) {
                 let ySize = 0;
                 while (ySize < height && isPossible) {
-                    isPossible = !unavailableTiles.includes(index + xSize + ySize * maxWidthSquare);
+                    isPossible = !unavailableTiles.includes(index + xSize + ySize * maxWidthTiles);
                     ySize++;
                 }
                 xSize++
@@ -35,12 +44,12 @@
             return isPossible;
         }
 
-        function placeBloc(width:number, height:number, index:number, maxWidthSquare:number, unavailableTiles:Array<number>) {
+        function placeBlocInMap(width:number, height:number, index:number, maxWidthTiles:number, unavailableTiles:Array<number>) {
             let xSize = 0;
             while (xSize <= width) {
                 let ySize = 0;
                 while (ySize < height) {
-                    unavailableTiles.push(index + xSize + ySize * maxWidthSquare);
+                    unavailableTiles.push(index + xSize + ySize * maxWidthTiles);
                     ySize++;
                 }
                 xSize++
@@ -48,176 +57,149 @@
             return unavailableTiles;
         }
 
-        $(function() {
-            if ($('.container-main-content').width() >= 1024) {
+        function placeBlocsInDOM(dataBlocsTexte:Array<{width:number,horizontalOffset:number,verticalOffset:number}>, breakpoints:{min:number,max:number}, maxWidthTiles:number) {
+            /*
+            ** Pour la hauteur, on laisse faire automatiquement avec la taille du texte
+            ** On regarde selon la hauteur donnée le nombre de cases prises par le texte
+            */
 
-                /*
-                ** Préparation de la grille pour le placement des textes
-                ** Grille de 24 de large, avec des carrés de 52.5 pour une largeur totale de 1280px
-                ** Textes pouvant avoir des tailles de 4 cases à 10 cases de large
-                ** On les redimensionne aléatoirement en largeur
-                ** Pour la hauteur, on laisse faire automatiquement avec la taille du texte
-                ** On regarde selon la hauteur donnée le nombre de cases prises par le texte
-                */
-                const maxWidthSquare = 24;
-                const squareSize = roundHalf($('.container-main-content').width() / maxWidthSquare);
-                const possibleSizes = { min: 6, max: 12 };
-                const textesSizes = { min: 2, max: 12 };
+            // Pas oublier les marges de 16px de côté
+            const squareSize = $( window ).width() > breakpoints.max ? roundHalf(breakpoints.max / maxWidthTiles) : roundHalf(($( window ).width() - 32) / maxWidthTiles);    
+            let unavailableTiles = [];
+            
+            $( ".bloc-texte-lg" ).each((index, item) => {
+                // On récupère le texte comme un objet jQuery
+                let texte = $(item);
+                
+                // On redimensionne le texte selon le nombre de cases de largeur qui a été calculé
+                texte.css({
+                    'width': roundHalf(dataBlocsTexte[index].width * squareSize) + 'px',
+                })
 
-                // On garde en mémoire les cases occupées dans un tableau (Pas de coordonnées, juste le numéro de case)
-                let unavailableTiles: number[] = [];
+                // On calcule sa hauteur en terme de cases
+                const texteHeight = Math.round(texte.height() / squareSize) + 2;
 
-                // On garde en mémoire les tailles et positions pour gérer le redimensionnement de la fenêtre
-                let dataBlocsTexte = [];
+                let isPossible = false;
+                let yPos = 0;
+                let xPos = 0;
 
-                $( ".bloc-texte" ).each((index, item) => {
-                    /*
-                    ** REDIMENSIONNEMENT DES TEXTES
-                    */
-
-                    // On récupère le texte comme un objet jQuery
-                    let texte = $(item);
-
-                    // On récupère d'abord la taille du texte en largeur pour avoir une échelle de base
-                    let texteWidth = Math.round(texte.width() / squareSize) + 1
-
-                    // S'il est trop large on définit une largeur en fonction de la taille du texte
-                    if (texteWidth > possibleSizes.max) {
-                        texteWidth = Math.floor(texte.text().length / 100)
-                        texteWidth = texteWidth < textesSizes.min ? textesSizes.min : texteWidth;
-                        texteWidth = texteWidth > textesSizes.max ? textesSizes.max : texteWidth;
-                        // Pour les petits textes, on les élargit pour avoir un ratio plus large que long
-                        texteWidth = texteWidth < 3 ? texteWidth + 3 : texteWidth;
-                        // On scale la largeur entre les tailles possibles des textes et les tailles prédéfinies choisies
-                        texteWidth = Math.round((possibleSizes.max - possibleSizes.min) * (texteWidth - textesSizes.min) / (textesSizes.max - textesSizes.min) + possibleSizes.min)
-
+                // Tester sur chaque case si le texte peut être placée sans être sur une autre
+                while (!isPossible) {
+                    xPos = 0;
+                    while (xPos < maxWidthTiles - dataBlocsTexte[index].width && !isPossible) {
+                        isPossible = isBlocPlaceable(dataBlocsTexte[index].width + dataBlocsTexte[index].horizontalOffset, texteHeight, (xPos + yPos * maxWidthTiles), maxWidthTiles, unavailableTiles);
+                        xPos++;
                     }
+                    yPos++;
+                }
+                        
+                // On ajoute l'offset
+                xPos += dataBlocsTexte[index].horizontalOffset;
+                yPos += dataBlocsTexte[index].verticalOffset;
 
-                    // On met la taille dans une constante
-                    const finalWidth = texteWidth;
-
-                    // On redimensionne le texte à sa taille finale
+                // On colle les textes à droite s'ils arrivent à moins de 4 cases du bord droit
+                xPos = maxWidthTiles - xPos - dataBlocsTexte[index].width < 4 ? maxWidthTiles - dataBlocsTexte[index].width + 1 : xPos;
+                
+                // Ajout des cases du texte en cours dans la liste des cases déjà prises
+                unavailableTiles = placeBlocInMap(dataBlocsTexte[index].width, texteHeight, (xPos - 1 + ((yPos - 1) * maxWidthTiles)), maxWidthTiles, unavailableTiles);
+                
+                if (window.innerWidth >= breakpoints.min) {
+                    // On place le texte
                     texte.css({
-                        'width': finalWidth * squareSize + 'px'
-                    })
-
-                    // On calcule sa hauteur en terme de cases
-                    const finalHeight = Math.round(texte.height() / squareSize) + 2;
-
-                    /*
-                    ** POSITIONNEMENT DES TEXTES
-                    */
-
-                    // 20% de chances que le texte soit décalée vers la droite
-                    const horizontalOffset = Math.random() < 0.2 ? 0 : 1;
-                    // 25% de chances que le texte soit décalée vers le bas
-                    const verticalOffset = Math.random() < 0.25 ? 0 : 1;
-
-                    let isPossible = false;
-                    let yPos = 0;
-                    let xPos = 0;
-
-                    // Tester sur chaque case si le texte peut être placée sans être sur une autre
-                    while (!isPossible) {
-                        xPos = 0;
-                        while (xPos < maxWidthSquare - finalWidth && !isPossible) {
-                            // currentCoor = [];
-                            // isPossible = true;
-                            // let xSize = 0;
-                            // while (xSize <= finalWidth && isPossible) {
-                            //     let ySize = 0;
-                            //     while (ySize < finalHeight && isPossible) {
-                            //         currentCoor.push((xPos + xSize + 1) + maxWidthSquare * (yPos + ySize));
-                            //         isPossible = !unavailableTiles.includes((xPos + xSize + 1) + maxWidthSquare * (yPos + ySize));
-                            //         ySize++;
-                            //     }
-                            //     xSize++
-                            // }
-                            isPossible = isBlocPlaceable(finalWidth + horizontalOffset, finalHeight + verticalOffset, (xPos + yPos * maxWidthSquare), maxWidthSquare, unavailableTiles);
-                            xPos++;
-                        }
-                        yPos++;
-                    }
-
-                    // On ajoute l'offset
-                    xPos += horizontalOffset;
-                    yPos += verticalOffset;
-
-                    // On colle les textes à droite s'ils arrivent à moins de 4 cases du bord droit
-                    xPos = maxWidthSquare - xPos - finalWidth < 4 ? maxWidthSquare - finalWidth + 1 : xPos;
-                    
-                    // Ajout des cases du texte en cours dans la liste des cases déjà prises
-                    unavailableTiles = placeBloc(finalWidth, finalHeight, (xPos - 1 + ((yPos - 1) * maxWidthSquare)), maxWidthSquare, unavailableTiles);
-
-                    texte.css({
-                        'top': (yPos - 1) * squareSize + 'px',
+                        'top': ((yPos - 1) * squareSize) + ((yPos - 1) * 1/2) + 'px',
                         'left': (xPos - 1) * squareSize + 'px'
                     });
+                }
+            });
 
-                    // On remplit le tableau des tailles et positions des différents textes
-                    dataBlocsTexte.push({ width: finalWidth, left: xPos - 1, verticalOffset: verticalOffset });
-                })
+            return Math.round(((Math.max(...unavailableTiles) / maxWidthTiles) * squareSize) + (Math.max(...unavailableTiles) / maxWidthTiles));
+        }
 
-                $( window ).on( 'resize', function() {
-                    if ($( window ).width() < 1260 && $( window ).width() > 1024) {
-                        let unavailableTiles = [];
-                        const squareSize = $( window ).width() / maxWidthSquare;
-                    
-                        $( ".bloc-texte" ).each((index, item) => {
-                            let texte = $(item);
-                            const height = Math.round(texte.height() / squareSize) + 2;
+        $(function() {
+            /*
+            ** Calcul des largeurs des textes ainsi que de leur offset aléatoire
+            ** Déclaration des variables globales pour la grille
+            ** Grille de 24 de large, taille des carrés calculés en fonction de la largeur de la fenêtre ou de la largeur max du contenu
+            ** Textes pouvant avoir des tailles de 4 cases à 10 cases de large
+            */
+            const breakpoints = { min: 1024, max: 1260 };
+            const maxWidthTiles = 24;
+            const squareSize = $( window ).width() > breakpoints.max ? roundHalf(breakpoints.max / maxWidthTiles) : roundHalf(($( window ).width() - 32) / maxWidthTiles);
+            const possibleSizes = { min: 6, max: 12 };
+            const textesSizes = { min: 2, max: 12 };
 
-                            // console.log(dataBlocsTexte[index])
-                            
-                            // On regarde si le bloc avec sa nouvelle taille chevauche un autre, si oui on le descend
-                            let isPossible = false;
-                            let yPos = 0;
+            // On garde en mémoire les tailles et positions pour gérer le redimensionnement de la fenêtre
+            let dataBlocsTexte = [];
 
-                            while (!isPossible) {
-                                isPossible = isBlocPlaceable(
-                                    dataBlocsTexte[index].width,
-                                    height + dataBlocsTexte[index].verticalOffset,
-                                    dataBlocsTexte[index].left + yPos * maxWidthSquare,
-                                    maxWidthSquare,
-                                    unavailableTiles
-                                    );
-                                yPos++;
-                            }
+            $( ".bloc-texte-lg" ).each((index, item) => {
+                /*
+                ** REDIMENSIONNEMENT DES TEXTES
+                */
 
-                            yPos += dataBlocsTexte[index].verticalOffset;
+                // On récupère le texte comme un objet jQuery
+                let texte = $(item);
 
-                            unavailableTiles = placeBloc(
-                                dataBlocsTexte[index].width,
-                                height,
-                                dataBlocsTexte[index].left + ((yPos - 1) * maxWidthSquare),
-                                maxWidthSquare,
-                                unavailableTiles
-                                );
+                // On récupère d'abord la taille du texte en largeur pour avoir une échelle de base
+                let texteWidth = Math.round(texte.width() / squareSize) + 1
 
-                            texte.css({
-                                'width': roundHalf(dataBlocsTexte[index].width * squareSize) + 'px',
-                                'left': roundHalf(dataBlocsTexte[index].left * squareSize) + 'px',
-                                'top': roundHalf((yPos - 1) * squareSize) + 'px'
-                                // 'left': 
-                            })
-                        })
-                    }
+                // S'il est trop large on définit une largeur en fonction de la taille du texte
+                if (texteWidth > possibleSizes.max) {
+                    texteWidth = Math.floor(texte.text().length / 100)
+                    texteWidth = texteWidth < textesSizes.min ? textesSizes.min : texteWidth;
+                    texteWidth = texteWidth > textesSizes.max ? textesSizes.max : texteWidth;
+                    // Pour les petits textes, on les élargit pour avoir un ratio plus large que long
+                    texteWidth = texteWidth < 3 ? texteWidth + 3 : texteWidth;
+                    // On scale la largeur entre les tailles possibles des textes et les tailles prédéfinies choisies
+                    texteWidth = Math.round((possibleSizes.max - possibleSizes.min) * (texteWidth - textesSizes.min) / (textesSizes.max - textesSizes.min) + possibleSizes.min)
+                }
 
-                    /*
-                    ** Déplacement du footer en bas de page
-                    */
+                // On met la taille dans une constante
+                const finalWidth = texteWidth;
+                
+                // 20% de chances que le texte soit décalée vers la droite
+                const horizontalOffset = Math.random() < 0.2 ? 1 : 0;
+                // 25% de chances que le texte soit décalée vers le bas
+                const verticalOffset = Math.random() < 0.25 ? 1 : 0;
+                
+                // On remplit le tableau des tailles et positions des différents textes
+                dataBlocsTexte.push({ width: finalWidth, horizontalOffset: horizontalOffset, verticalOffset: verticalOffset });
+            })
 
-                    // $(".footer").css({
-                    //     'margin-top': $(document).height() - $(body).height() + $('.footer').height() + 56 + 'px'
-                    // })
-                })
+            $( ".bloc-textes" ).addClass('hidden lg:block');
+
+            // On place les textes dans la page en récupérant la nouvelle hauteur du canvas
+            const canvasHeight = placeBlocsInDOM(dataBlocsTexte, breakpoints, maxWidthTiles);
+            
+            $( window ).on( 'resize', function() {
+                // On replace les textes dans la page en récupérant la nouvelle hauteur du canvas
+                const canvasHeight = placeBlocsInDOM(dataBlocsTexte, breakpoints, maxWidthTiles);
 
                 /*
                 ** Déplacement du footer en bas de page
                 */
 
-                $(".footer").css({
-                    'margin-top': $(document).height() - $(this.body).height() + $('.footer').height() + 56 + 'px'
+                if (window.innerWidth >= breakpoints.min) {
+                    $( ".bloc-textes" ).css({
+                        'height': canvasHeight + 'px'
+                    })
+                } else {
+                    $( ".bloc-textes" ).css({
+                        'height': 'auto'
+                    })
+                }
+            })
+
+            /*
+            ** Déplacement du footer en bas de page
+            */
+
+            if (window.innerWidth >= breakpoints.min) {
+                $( ".bloc-textes" ).css({
+                    'height': canvasHeight + 'px'
+                })
+            } else {
+                $( ".bloc-textes" ).css({
+                    'height': 'auto'
                 })
             }
         })

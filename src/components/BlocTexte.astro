@@ -1,8 +1,8 @@
 ---
-    const { texte } = Astro.props;
+    const { texte, mediaSize } = Astro.props;
 ---
 
-<div class="bloc-texte lg:absolute p-8 mb-4 border-4 border-black rounded-2xl">
+<div class={`bloc-texte-${mediaSize} lg:absolute p-8 mb-4 text-xl xl:text-2xl border-4 border-black rounded-2xl`}>
     <Fragment set:html={ texte.compiledContent() } />
     <p class="font-headings text-base text-right !mb-0">{ texte.frontmatter.date }</p>
 </div>
