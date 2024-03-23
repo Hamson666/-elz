@@ -9,12 +9,11 @@
 <BaseLayout pageTitle={ pageTitle }>
     <h1 class="text-center font-headings font-bold text-4xl lg:text-5xl my-8">{ pageTitle }</h1>
 
-    <div class="bloc-textes-grid sm:grid sm:grid-cols-2 sm:gap-2 lg:hidden">
-        <!-- {textes.map((texte) => <BlocTexte texte={ texte } />)} -->
-        <div class="zine-col-0">
+    <div class="bloc-textes-grid md:grid md:grid-cols-2 md:gap-2 lg:hidden">
+        <div class="texte-col-0">
             {textes.reverse().map((texte) => Number.parseInt(texte.url.substr(-1, 1)) % 2 == 0 && <BlocTexte texte={ texte } mediaSize="sm" />)}
         </div>
-        <div class="zine-col-1">
+        <div class="texte-col-1">
             {textes.reverse().map((texte) => Number.parseInt(texte.url.substr(-1, 1)) % 2 != 0 && <BlocTexte texte={ texte } mediaSize="sm" />)}
         </div>
     </div>
@@ -119,7 +118,7 @@
             /*
             ** Calcul des largeurs des textes ainsi que de leur offset aléatoire
             ** Déclaration des variables globales pour la grille
-            ** Grille de 24 de large, taille des carrés calculés en fonction de la largeur de la fenêtre ou de la largeur max du contenu
+            ** Grille de 24 de large, taille des carrés calculés en fonction de la largeur de la fenêtre ou de la largeur max du contenu (1260px)
             ** Textes pouvant avoir des tailles de 4 cases à 10 cases de large
             */
             const breakpoints = { min: 1024, max: 1260 };
