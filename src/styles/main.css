@@ -1,10 +1,14 @@
 @font-face { font-family: Corbel; src: url('/fonts/CORBEL.TTF'); }
 
-body {
-  font-family: 'Corbel', Arial, Helvetica, sans-serif;
-  line-height: normal;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-p {
-  margin-bottom: 1em !important;
+@layer base {
+  a {
+    @apply underline sm:no-underline sm:hover:underline;
+  }
+  p {
+    @apply !mb-4;
+  }
 }

@@ -13,20 +13,24 @@
 
     <div class="grand-carousel-container flex flex-row items-start">
         <div class="gd-carousel-slides-container w-full flex flex-row items-start">
-            <button class="gd-button-prev mx-6 md:mx-8 lg:mx-10 my-8 max-h-gd-carousel w-[30px] md:w-[40px] lg:w-[50px]"><img src="/fleche-gauche.svg" alt="Flèche gauche grand carousel"></button>
+            <button class="gd-button-prev mx-2 sm:mx-6 md:mx-8 lg:mx-10 my-8 max-h-gd-carousel w-[30px] md:w-[40px] lg:w-[50px]"><img src="/fleche-gauche.svg" alt="Flèche gauche grand carousel"></button>
             <div class="gd-carousel flex-1">
                 {grandesImages.map((image) => <BlocGrandeImage image={ image } />)}
             </div>
-            <button class="gd-button-next mx-6 md:mx-8 lg:mx-10 my-8 max-h-gd-carousel w-[30px] md:w-[40px] lg:w-[50px]"><img src="/fleche-droite.svg" alt="Flèche droite grand carousel"></button>
+            <button class="gd-button-next mx-2 sm:mx-6 md:mx-8 lg:mx-10 my-8 max-h-gd-carousel w-[30px] md:w-[40px] lg:w-[50px]"><img src="/fleche-droite.svg" alt="Flèche droite grand carousel"></button>
         </div>
     </div>
 
-    <div class="pt-carousel-container flex flex-row items-start my-12">
+    <div class="pt-carousel-container hidden sm:flex flex-row items-start my-12">
         <button class="pt-button-prev mx-6 md:mx-8 lg:mx-10 w-[30px] md:w-[40px] lg:w-[50px]"><img src="/fleche-gauche.svg" alt="Flèche gauche petit carousel"></button>
         <div class="pt-carousel flex-1 grid grid-cols-5 gap-4">
             {petitesImages.map((image) => <BlocPetiteImage image={ image } />)}
         </div>
         <button class="pt-button-next mx-6 md:mx-8 lg:mx-10 w-[30px] md:w-[40px] lg:w-[50px]"><img src="/fleche-droite.svg" alt="Flèche droite petit carousel"></button>
+    </div>
+
+    <div class="pt-grid grid grid-cols-3 gap-4 sm:hidden my-12">
+        {petitesImages.map((image) => <BlocPetiteImage image={ image } />)}
     </div>
 
     <script is:inline
@@ -97,9 +101,9 @@
             ** SCRIPT POUR LE PETIT CAROUSEL
             */
             
-            let ptItems = $(".item-pt-carousel");
+            let ptItems = $(".pt-carousel-container > .pt-carousel > .item-pt-carousel");
             for (let i = 0; i < 5; i++) {
-                ptItems.eq(i).removeClass("hidden");
+                ptItems.eq(i).removeClass("sm:hidden");
             }
 
             // On change la hauteur des blocs contenant les flèches pour les centrer
@@ -109,41 +113,48 @@
                 });
             })
 
-            // On change la hauteur des blocs contenant les flèches pour les centrer
-            // $(".gd-button-prev, .gd-button-next").each((i, item) => {
-            //     $(item).css({
-            //         'height': $(".img-projet-gd-carousel").eq((index - 1 + gdItems.length) % gdItems.length).height() + 'px'
-            //     });
-            // })
-
-            // Function to show a specific item
+            // Fonction qui permet d'afficher 5 slides selon la place de la première dans le tableau
             function showPtItem(indexFirstSlideToShow) {
                 ptItems.each((index, item) => {
                     if (index >= indexFirstSlideToShow && index < indexFirstSlideToShow + 5 && index < ptItems.length) {
-                        $(item).removeClass("hidden");
-                    } else if (!$(item).hasClass("hidden")) {
-                        $(item).addClass("hidden");
+                        $(item).removeClass("sm:hidden");
+                    } else if (!$(item).hasClass("sm:hidden")) {
+                        $(item).addClass("sm:hidden");
                     }
                 });
             }
 
-            // Event listeners for buttons
+            // Event listeners pour les flèches
             $(".pt-button-prev").on("click", () => {
                 let index = [...ptItems].findIndex((item) =>
-                    !$(item).hasClass("hidden")
+                    !$(item).hasClass("sm:hidden")
                 );
                 index - 5 >= 0 ? showPtItem(((index - 5 + ptItems.length) % ptItems.length)) : showPtItem(ptItems.length - ptItems.length % 5);
+
+                // On change la hauteur des blocs contenant les flèches pour les centrer
+                $(".pt-button-prev, .pt-button-next").each((index, item) => {
+                    $(item).css({
+                        'height': $(".img-projet-pt-carousel").first().height() + 'px'
+                    });
+                })
             });
         
             $(".pt-button-next").on("click", () => {
                 let index = [...ptItems].findIndex((item) =>
-                    !$(item).hasClass("hidden")
+                    !$(item).hasClass("sm:hidden")
                 );
                 index + 5 < ptItems.length ? showPtItem((index + 5) % ptItems.length) : showPtItem(0);
+
+                // On change la hauteur des blocs contenant les flèches pour les centrer
+                $(".pt-button-prev, .pt-button-next").each((index, item) => {
+                    $(item).css({
+                        'height': $(".img-projet-pt-carousel").first().height() + 'px'
+                    });
+                })
             });
 
+            // Au redimensionnement de la fenêtre on change la hauteur des blocs contenant les flèches pour les centrer
             $( window ).on( 'resize', function() {
-                // Au redimensionnement de la fenêtre on change la hauteur des blocs contenant les flèches pour les centrer
                 $(".pt-button-prev, .pt-button-next").each((index, item) => {
                     $(item).css({
                         'height': $(".img-projet-pt-carousel").first().height() + 'px'

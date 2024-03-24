@@ -2,4 +2,4 @@
     const { patch, mediaSize } = Astro.props;
 ---
 
-<img class={`patch-img-${mediaSize} lg:absolute object-cover box-border border-base-color border-2`} src=`${ patch.frontmatter.image.url }` alt=`${ patch.frontmatter.image.alt }` />
+<img class={`patch-img-${mediaSize} mx-auto lg:absolute object-cover box-border border-base-color border-2`} src=`${ patch.frontmatter.image.url }` alt=`${ patch.frontmatter.image.alt }` />

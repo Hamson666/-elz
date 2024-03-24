@@ -8,7 +8,7 @@ export default {
 			},
 			fontFamily: {
 				'headings': ['"Arvo"', 'Helvetica', 'Arial', 'sans-serif'],
-				// 'headings': [],
+				'base': ['"Corbel"', 'Arial', 'Helvetica', 'sans-serif'],
 		  	},
 			fontSize: {
 				xs: '0.75rem',

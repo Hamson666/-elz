@@ -2,7 +2,7 @@
     const { image } = Astro.props;
 ---
 
-<div class="item-pt-carousel hidden">
+<div class="item-pt-carousel sm:hidden">
     <div class="img-projet-pt-carousel h-pt-carousel max-w-48 max-h-48 mb-0 aspect-square">
         <img class="w-auto h-full aspect-square object-cover object-center" src=`${image.frontmatter.image.url}` alt=`${image.frontmatter.image.alt}`/>
     </div>
