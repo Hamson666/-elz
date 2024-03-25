@@ -15,7 +15,7 @@
         <div class="gd-carousel-slides-container w-full flex flex-row items-start">
             <button class="gd-button-prev mx-2 sm:mx-6 md:mx-8 lg:mx-10 my-8 max-h-gd-carousel w-[30px] md:w-[40px] lg:w-[50px]"><img src="/fleche-gauche.svg" alt="Flèche gauche grand carousel"></button>
             <div class="gd-carousel flex-1">
-                {grandesImages.map((image) => <BlocGrandeImage image={ image } />)}
+                {grandesImages.reverse().map((image) => <BlocGrandeImage image={ image } />)}
             </div>
             <button class="gd-button-next mx-2 sm:mx-6 md:mx-8 lg:mx-10 my-8 max-h-gd-carousel w-[30px] md:w-[40px] lg:w-[50px]"><img src="/fleche-droite.svg" alt="Flèche droite grand carousel"></button>
         </div>
@@ -24,13 +24,13 @@
     <div class="pt-carousel-container hidden sm:flex flex-row items-start my-12">
         <button class="pt-button-prev mx-6 md:mx-8 lg:mx-10 w-[30px] md:w-[40px] lg:w-[50px]"><img src="/fleche-gauche.svg" alt="Flèche gauche petit carousel"></button>
         <div class="pt-carousel flex-1 grid grid-cols-5 gap-4">
-            {petitesImages.map((image) => <BlocPetiteImage image={ image } />)}
+            {petitesImages.reverse().map((image) => <BlocPetiteImage image={ image } />)}
         </div>
         <button class="pt-button-next mx-6 md:mx-8 lg:mx-10 w-[30px] md:w-[40px] lg:w-[50px]"><img src="/fleche-droite.svg" alt="Flèche droite petit carousel"></button>
     </div>
 
     <div class="pt-grid grid grid-cols-3 gap-4 sm:hidden my-12">
-        {petitesImages.map((image) => <BlocPetiteImage image={ image } />)}
+        {petitesImages.reverse().map((image) => <BlocPetiteImage image={ image } />)}
     </div>
 
     <script is:inline

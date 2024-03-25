@@ -9,10 +9,6 @@
 <BaseLayout pageTitle={ pageTitle }>
     <h1 class="text-center font-headings font-bold text-4xl lg:text-5xl my-8">{ pageTitle }</h1>
 
-    <!-- <div class="patch-imgs relative sm:grid sm:grid-cols-5">
-        {patchs.reverse().map((patch) => <BlocPatch patch={ patch } />)}
-    </div> -->
-
     <div class="patch-imgs-grid hidden md:grid md:grid-cols-3 md:gap-2 lg:hidden">
         <div class="patch-col-0">
             {patchs.reverse().map((patch) => Number.parseInt(patch.url.substr(-1, 1)) % 3 == 0 && <BlocPatch patch={ patch } mediaSize="md" />)}
@@ -33,7 +29,7 @@
         </div>
     </div>
     <div class="patch-imgs relative">
-        {patchs.map((patch) => <BlocPatch patch={ patch } mediaSize="lg" />)}
+        {patchs.reverse().map((patch) => <BlocPatch patch={ patch } mediaSize="lg" />)}
     </div>
 
     <script is:inline
@@ -42,8 +38,10 @@
 			  crossorigin="anonymous">
     </script>
     <script>
+        // Fonction qui permet d'arrondir à 0.5 près
         function roundHalf(num:number):number { return (Math.round(num*2)/2); }
 
+        // Fonction pour savoir si le patch est plaçable sur la grille
         function isBlocPlaceable(width:number, height:number, index:number, maxWidthTiles:number, unavailableTiles:Array<number>) {
             let isPossible = true;
             let xSize = 0;
@@ -58,6 +56,7 @@
             return isPossible;
         }
 
+        // Fonction pour remplir le tableau unavailableTiles afin de savoir quelles cases sont occupées
         function placeBlocInMap(width:number, height:number, index:number, maxWidthTiles:number, unavailableTiles:Array<number>) {
             let xSize = 0;
             while (xSize <= width) {
@@ -71,6 +70,7 @@
             return unavailableTiles;
         }
 
+        // Fonction pour placer les patchs dans la fenêtre, et retourne la hauteur du canvas calculée en px
         function placeBlocsInDOM(dataBlocsPatch:Array<{width:number,height:number,horizontalOffset:number,verticalOffset:number}>, breakpoints:{min:number,max:number}, maxWidthTiles:number) {
             // Pas oublier les marges de 16px de côté
             const squareSize = $( window ).width() > breakpoints.max ? roundHalf(breakpoints.max / maxWidthTiles) : roundHalf(($( window ).width() - 32) / maxWidthTiles);    
@@ -104,8 +104,8 @@
                 // Ajout des cases du patch en cours dans la liste des cases déjà prises
                 unavailableTiles = placeBlocInMap(dataBlocsPatch[index].width, dataBlocsPatch[index].height, (xPos - 2 + ((yPos - 1) * maxWidthTiles)), maxWidthTiles, unavailableTiles);
                 
+                // On redimensionne et place le patch si la fenêtre est plus large que le breakpoint minimum choisi
                 if (window.innerWidth >= breakpoints.min) {
-                    // On redimensionne et  place le patch
                     patch.css({
                         'top': (yPos - 1) * squareSize + 'px',
                         'left': (xPos - 1) * squareSize + 'px',
@@ -119,9 +119,25 @@
             return Math.floor((Math.max(...unavailableTiles) / maxWidthTiles + 1) * squareSize);
         }
 
+        function resizeCanvas(breakpointMin:number, canvasHeight:number) {
+            // Si la fenêtre est plus large que le breakpoint minimum choisi, on place le footer en redimensionnant la hauteur du canvas
+            // à la hauteur calculée par la fonction placeBlocsInDOM
+            // Sinon, on laisse le CSS de base s'en charger
+            if (window.innerWidth >= breakpointMin) {
+                $( ".patch-imgs" ).css({
+                    'height': canvasHeight + 'px'
+                })
+            } else {
+                $( ".patch-imgs" ).css({
+                    'height': 'auto'
+                })
+            }
+        }
+
         $(function() {
             /*
-            ** Préparation de la grille pour le placement des images
+            ** Calcul de la taille des patchs ainsi que de leur offset aléatoire
+            ** Déclaration des variables globales pour la grille
             ** Grille de 24 de large, taille des carrés calculés en fonction de la largeur de la fenêtre ou de la largeur max du contenu (1260px)
             ** Images pouvant avoir des tailles de 3 cases à 10 cases par côté
             ** On les redimensionne en fonction du ratio le plus proche grâce à la liste allSizes
@@ -226,53 +242,31 @@
                     }
                 })
 
-                // Si l'image redimensionnée est carrée
-
                 // 20% de chances que le patch soit décalée vers la droite
                 const horizontalOffset = Math.random() < 0.2 ? 1 : 0;
                 // 25% de chances que le patch soit décalée vers le bas
                 const verticalOffset = Math.random() < 0.25 ? 1 : 0;
 
-                // On remplit le tableau des tailles et positions des différents patchs
+                // On remplit le tableau des tailles et de l'offset aléatoire des différents patchs
                 dataBlocsPatch.push({ width: finalWidth, height: finalHeight, horizontalOffset: horizontalOffset, verticalOffset: verticalOffset });
             });
 
+            // En dessous du breakpoint minimum choisi, les patchs placés grâce au script ne sont pas visible
             $( ".patch-imgs" ).addClass('hidden lg:block');
 
+            // On place les patchs dans la page, et on récupère la hauteur totale du canvas (pour le footer)
             const canvasHeight = placeBlocsInDOM(dataBlocsPatch, breakpoints, maxWidthTiles);
+
+            // Déplacement du footer en bas de page
+            resizeCanvas(breakpoints.min, canvasHeight);
             
             $( window ).on( 'resize', function() {
-                // On replace les patchs dans la page en récupérant la nouvelle hauteur du canvas
+                // On replace les patchs dans la page, et on récupère la hauteur totale du canvas (pour le footer)
                 const canvasHeight = placeBlocsInDOM(dataBlocsPatch, breakpoints, maxWidthTiles);
 
-                /*
-                ** Déplacement du footer en bas de page
-                */
-
-                if (window.innerWidth >= breakpoints.min) {
-                    $( ".patch-imgs" ).css({
-                        'height': canvasHeight + 'px'
-                    })
-                } else {
-                    $( ".patch-imgs" ).css({
-                        'height': 'auto'
-                    })
-                }
+                // Déplacement du footer en bas de page
+                resizeCanvas(breakpoints.min, canvasHeight);
             })
-
-            /*
-            ** Déplacement du footer en bas de page
-            */
-
-            if (window.innerWidth >= breakpoints.min) {
-                $( ".patch-imgs" ).css({
-                    'height': canvasHeight + 'px'
-                })
-            } else {
-                $( ".patch-imgs" ).css({
-                    'height': 'auto'
-                })
-            }
         });
     </script>
 </BaseLayout>

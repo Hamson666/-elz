@@ -1,14 +1,16 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+    import BaseLayout from '../layouts/BaseLayout.astro';
 
-import Bio from '../components/Bio.astro';
-import Newsletter from '../components/Newsletter.astro';
-import Actu from '../components/Actu.astro';
-import Contact from '../components/Contact.astro';
-import Friends from '../components/Friends.astro';
+    import Bio from '../components/Bio.astro';
+    import Newsletter from '../components/Newsletter.astro';
+    import Actu from '../components/Actu.astro';
+    import Contact from '../components/Contact.astro';
+    import Friends from '../components/Friends.astro';
+
+    const pageTitle = "Accueil"
 ---
 
-<BaseLayout pageTitle="Accueil">
+<BaseLayout pageTitle={ pageTitle }>
     <div class="image-index w-100 h-96 flex items-center !bg-cover mb-4">
         <h1 class="image-index-text font-headings font-bold text-center text-5xl sm:text-6xl lg:text-7xl text-base-color mx-auto px-4 sm:px-8 lg:px-12">Never stop creating new shit</h1>
     </div>
@@ -34,7 +36,7 @@ import Friends from '../components/Friends.astro';
     </div>
 </BaseLayout>
 
-<style>
+<style scoped>
     .image-index {
         background-blend-mode: luminosity;
         background: url('/background-index-image.jpeg') no-repeat center hsl(54, 70%, 80.39%);

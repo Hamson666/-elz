@@ -9,5 +9,5 @@
 <BaseLayout pageTitle={ pageTitle }>
     <h1 class="text-center font-headings font-bold text-4xl lg:text-5xl my-8">{ pageTitle }</h1>
 
-    {zines.map((zine) => <BlocZine zine={ zine } />)}
+    {zines.reverse().map((zine) => <BlocZine zine={ zine } />)}
 </BaseLayout>

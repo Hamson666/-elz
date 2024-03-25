@@ -18,7 +18,7 @@
         </div>
     </div>
     <div class="bloc-textes relative">
-        {textes.map((texte) => <BlocTexte texte={ texte } mediaSize="lg" />)}
+        {textes.reverse().map((texte) => <BlocTexte texte={ texte } mediaSize="lg" />)}
     </div>
 
     <script is:inline
@@ -27,8 +27,10 @@
 			  crossorigin="anonymous">
     </script>
     <script>
+        // Fonction qui permet d'arrondir à 0.5 près
         function roundHalf(num:number):number { return (Math.round(num*2)/2); }
 
+        // Fonction pour savoir si le texte est plaçable sur la grille
         function isBlocPlaceable(width:number, height:number, index:number, maxWidthTiles:number, unavailableTiles:Array<number>) {
             let isPossible = true;
             let xSize = 0;
@@ -43,6 +45,7 @@
             return isPossible;
         }
 
+        // Fonction pour remplir le tableau unavailableTiles afin de savoir quelles cases sont occupées
         function placeBlocInMap(width:number, height:number, index:number, maxWidthTiles:number, unavailableTiles:Array<number>) {
             let xSize = 0;
             while (xSize <= width) {
@@ -56,6 +59,7 @@
             return unavailableTiles;
         }
 
+        // Fonction pour placer les textes dans la fenêtre, et retourne la hauteur du canvas calculée en px
         function placeBlocsInDOM(dataBlocsTexte:Array<{width:number,horizontalOffset:number,verticalOffset:number}>, breakpoints:{min:number,max:number}, maxWidthTiles:number) {
             /*
             ** Pour la hauteur, on laisse faire automatiquement avec la taille du texte
@@ -102,8 +106,8 @@
                 // Ajout des cases du texte en cours dans la liste des cases déjà prises
                 unavailableTiles = placeBlocInMap(dataBlocsTexte[index].width, texteHeight, (xPos - 1 + ((yPos - 1) * maxWidthTiles)), maxWidthTiles, unavailableTiles);
                 
+                // On place le patch si la fenêtre est plus large que le breakpoint minimum choisi
                 if (window.innerWidth >= breakpoints.min) {
-                    // On place le texte
                     texte.css({
                         'top': ((yPos - 1) * squareSize) + ((yPos - 1) * 1/2) + 'px',
                         'left': (xPos - 1) * squareSize + 'px'
@@ -111,7 +115,23 @@
                 }
             });
 
+            // On renvoie la taille complète du canvas du début jusqu'à la dernière case occupée
             return Math.round(((Math.max(...unavailableTiles) / maxWidthTiles) * squareSize) + (Math.max(...unavailableTiles) / maxWidthTiles));
+        }
+
+        function resizeCanvas(breakpointMin:number, canvasHeight:number) {
+            // Si la fenêtre est plus large que le breakpoint minimum choisi, on place le footer en redimensionnant la hauteur du canvas
+            // à la hauteur calculée par la fonction placeBlocsInDOM
+            // Sinon, on laisse le CSS de base s'en charger
+            if (window.innerWidth >= breakpointMin) {
+                $( ".bloc-textes" ).css({
+                    'height': canvasHeight + 'px'
+                })
+            } else {
+                $( ".bloc-textes" ).css({
+                    'height': 'auto'
+                })
+            }
         }
 
         $(function() {
@@ -120,6 +140,7 @@
             ** Déclaration des variables globales pour la grille
             ** Grille de 24 de large, taille des carrés calculés en fonction de la largeur de la fenêtre ou de la largeur max du contenu (1260px)
             ** Textes pouvant avoir des tailles de 4 cases à 10 cases de large
+            ** La hauteur est gérée par le navigateur, on la récupère pour calculer le nombre de cases correspondant
             */
             const breakpoints = { min: 1024, max: 1260 };
             const maxWidthTiles = 24;
@@ -160,47 +181,26 @@
                 // 25% de chances que le texte soit décalée vers le bas
                 const verticalOffset = Math.random() < 0.25 ? 1 : 0;
                 
-                // On remplit le tableau des tailles et positions des différents textes
+                // On remplit le tableau de la largeur et des offsets aléatoires des différents textes
                 dataBlocsTexte.push({ width: finalWidth, horizontalOffset: horizontalOffset, verticalOffset: verticalOffset });
             })
 
+            // En dessous du breakpoint minimum choisi, les textes placés grâce au script ne sont pas visible
             $( ".bloc-textes" ).addClass('hidden lg:block');
 
-            // On place les textes dans la page en récupérant la nouvelle hauteur du canvas
+            // On place les patchs dans la page, et on récupère la hauteur totale du canvas (pour le footer)
             const canvasHeight = placeBlocsInDOM(dataBlocsTexte, breakpoints, maxWidthTiles);
+
+            // Déplacement du footer en bas de page
+            resizeCanvas(breakpoints.min, canvasHeight);
             
             $( window ).on( 'resize', function() {
-                // On replace les textes dans la page en récupérant la nouvelle hauteur du canvas
+                // On place les patchs dans la page, et on récupère la hauteur totale du canvas (pour le footer)
                 const canvasHeight = placeBlocsInDOM(dataBlocsTexte, breakpoints, maxWidthTiles);
 
-                /*
-                ** Déplacement du footer en bas de page
-                */
-
-                if (window.innerWidth >= breakpoints.min) {
-                    $( ".bloc-textes" ).css({
-                        'height': canvasHeight + 'px'
-                    })
-                } else {
-                    $( ".bloc-textes" ).css({
-                        'height': 'auto'
-                    })
-                }
+                // Déplacement du footer en bas de page
+                resizeCanvas(breakpoints.min, canvasHeight);
             })
-
-            /*
-            ** Déplacement du footer en bas de page
-            */
-
-            if (window.innerWidth >= breakpoints.min) {
-                $( ".bloc-textes" ).css({
-                    'height': canvasHeight + 'px'
-                })
-            } else {
-                $( ".bloc-textes" ).css({
-                    'height': 'auto'
-                })
-            }
         })
     </script>
 </BaseLayout>

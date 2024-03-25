@@ -1,47 +1,45 @@
-# Astro Starter Kit: Minimal
+# Ortie portfolio website
 
-```sh
-npm create astro@latest -- --template minimal
-```
+## Technologies utilisées
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/minimal)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/minimal)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/minimal/devcontainer.json)
+- **Languages** : HTML5, Javascript, Markdown
+- **Frameworks** : Node.js, Vite.js, Astro, Tailwind CSS, jQuery
+- **Hébergeur** : Alsace Réseau Neutre ?
+- **Serveur** : Yunohost ?
+- **Logiciel d'intégration continue** : Jenkins ?
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Comment utiliser GitHub
 
-## 🚀 Project Structure
+Compte GitHub
 
-Inside of your Astro project, you'll see the following folders and files:
+Clone
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+Commit
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Push
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Comment ajouter du contenu
 
-Any static assets, like images, can be placed in the `public/` directory.
+Les fichiers dans lequel mettre le contenu textuel sont les fichiers .md qui se trouvent dans les sous-dossiers du dossier /src/pages/  
+Les images se trouvent dans les sous-dossiers du dossier /public/
 
-## 🧞 Commands
+Dedans selon le type de contenu (Patch, print, zine...) le contenu des fichiers .md ne sera pas le même
 
-All commands are run from the root of the project, from a terminal:
+La manière la plus simple de faire un nouveau contenu (Nouveau patch, nouveau print, nouvelle image dans la galerie...)  
+c'est encore de prendre un fichier .md déjà existant dans le dossier et de le modifier pour y mettre les infos qu'il faut,  
+puis rajouter l'image correspondant dans le dossier /public/
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+**Exemple :**
 
-## 👀 Want to learn more?
+Pour rajouter un zine :
+- Copier un fichier /src/pages/zines/zine-**.md
+- Coller et renommer avec le numéro du zine correspondant :
+  - Exemple : Si le dernier zine c'est le zine-04.md, on renomme le fichier en zine-05.md
+- L'ouvrir et modifier les infos :
+  - Les infos d'en-tête (Dans ce cas le titre, la date, l'auteurse et l'image)
+  - Le contenu en lui même (En language markdown, ici c'est la description du zine)
+- Enregistrer ce fichier
+- Ajouter l'image dans le dossier /public/zines/nom-du-fichier.PNG
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Et voilà ! Une fois le site renvoyé sur GitHub, [Logiciel de CI] se chargera de rebuild le site,  
+et quelques secondes/minutes après ce sera sur internet et tu pourras vérifier que tout est bon
